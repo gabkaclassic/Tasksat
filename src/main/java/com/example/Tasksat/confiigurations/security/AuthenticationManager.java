@@ -1,5 +1,6 @@
 package com.example.Tasksat.confiigurations.security;
 
+import com.example.Tasksat.data.entities.users.AccountService;
 import com.example.Tasksat.handling.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

@@ -28,6 +28,9 @@ public class Account implements UserDetails {
     @Indexed(unique = true)
     private String email;
 
+    @Indexed(unique = true)
+    private String code;
+
     private String password;
 
     private Set<Authority> authorities = Set.of(Authority.LOCKED);

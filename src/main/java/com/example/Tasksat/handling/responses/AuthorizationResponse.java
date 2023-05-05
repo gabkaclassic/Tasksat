@@ -1,2 +1,4 @@
-package com.example.Tasksat.handling.responses;public class AuthorizationResponse {
+package com.example.Tasksat.handling.responses;
+
+public record AuthorizationResponse(String token) {
 }

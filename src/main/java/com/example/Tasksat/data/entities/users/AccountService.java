@@ -1,6 +1,10 @@
 package com.example.Tasksat.data.entities.users;
 
+import com.example.Tasksat.handling.responses.AuthorizationResponse;
+import com.example.Tasksat.handling.responses.RegistrationResponse;
+import com.example.Tasksat.handling.utils.AccountDataValidatorUtil;
 import com.example.Tasksat.handling.utils.JWTUtil;
+import com.example.Tasksat.handling.utils.MailUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +15,10 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +31,9 @@ public class AccountService implements ReactiveUserDetailsService {
     private final PasswordEncoder encoder;
 
     private final MailUtil mailUtil;
+
+
+    private final AccountDataValidatorUtil validator;
 
     private static final Random random = new Random();
 
@@ -168,16 +178,5 @@ public class AccountService implements ReactiveUserDetailsService {
                     return ResponseEntity.ok(violations);
                 });
 
-    }
-
-    public Mono<ResponseEntity<Map<String, String>>> interactionData(String token) {
-
-        return jwtUtil.validateToken(token) ?
-                Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Error", "Wrong token")))
-                : Mono.just(ResponseEntity.ok(
-                Map.of("id", jwtUtil.extractId(token), "key",
-                        securityData.getInteractionKey()
-                )
-        ));
     }
 }
