@@ -1,39 +1,28 @@
-package com.example.Tasksat.data.entities.users;
+package com.example.Tasksat.data.entities.accounts;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
-@Document("users")
+import static com.example.Tasksat.data.entities.accounts.Authority.*;
+
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-public class Account implements UserDetails {
+public abstract class Account implements UserDetails {
     @Id
-    private String id;
+    protected String id;
 
     @Indexed(unique = true)
-    private String login;
+    protected String login;
 
-    @Indexed(unique = true)
-    private String email;
+    protected String password;
 
-    @Indexed(unique = true)
-    private String code;
-
-    private String password;
-
-    private Set<Authority> authorities = Set.of(Authority.LOCKED);
+    protected Set<Authority> authorities = new HashSet<>();
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
@@ -51,21 +40,21 @@ public class Account implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return !authorities.contains(LOCKED);
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return code == null;
+        return !authorities.contains(LOCKED);
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return !authorities.contains(LOCKED);
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return !authorities.contains(LOCKED);
     }
 }

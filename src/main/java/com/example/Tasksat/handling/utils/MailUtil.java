@@ -1,7 +1,8 @@
 package com.example.Tasksat.handling.utils;
 
 
-import com.example.Tasksat.data.entities.users.Account;
+import com.example.Tasksat.data.entities.accounts.Account;
+import com.example.Tasksat.data.entities.accounts.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -24,7 +25,7 @@ public class MailUtil {
     private static final String confirmationSubject = "Confirmation of registration";
     private static final String confirmationMail = """
             Dear %s,
-            You had been registration process in our service Spoad.
+            You had been registration process in our service Tasksat.
             Please, confirm it with redirect to follow link below:
             %s%s
             """;
@@ -61,7 +62,7 @@ public class MailUtil {
         sender.send(message);
     }
 
-    public void addToMessageQueue(Account recipient) throws InterruptedException {
+    public void addToMessageQueue(User recipient) throws InterruptedException {
 
         if(recipient.getCode() == null)
             throw new IllegalStateException("Confirmation code can't be null");

@@ -1,4 +1,4 @@
-package com.example.Tasksat.data.entities.users;
+package com.example.Tasksat.data.entities.accounts.users;
 
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -6,11 +6,11 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface AccountRepository extends ReactiveMongoRepository<Account, String> {
+public interface UserRepository extends ReactiveMongoRepository<User, String> {
 
     Mono<UserDetails> findByLogin(String login);
 
-    Mono<Account> findByCode(String code);
+    Mono<User> findByCode(String code);
 
     Mono<Boolean> existsByLogin(String login);
 

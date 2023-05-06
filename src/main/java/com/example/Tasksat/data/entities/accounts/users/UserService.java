@@ -1,11 +1,15 @@
-package com.example.Tasksat.data.entities.users;
+package com.example.Tasksat.data.entities.accounts.users;
 
+import com.example.Tasksat.data.entities.accounts.Account;
 import com.example.Tasksat.handling.responses.AuthorizationResponse;
 import com.example.Tasksat.handling.responses.RegistrationResponse;
-import com.example.Tasksat.handling.utils.AccountDataValidatorUtil;
 import com.example.Tasksat.handling.utils.JWTUtil;
 import com.example.Tasksat.handling.utils.MailUtil;
+import com.example.Tasksat.handling.utils.validators.AccountValidator;
+import com.example.Tasksat.handling.utils.validators.data.UserData;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
@@ -16,15 +20,14 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-public class AccountService implements ReactiveUserDetailsService {
+public class UserService {
 
-    private final AccountRepository repository;
+    private final UserRepository repository;
 
     private final JWTUtil jwtUtil;
 
@@ -32,15 +35,15 @@ public class AccountService implements ReactiveUserDetailsService {
 
     private final MailUtil mailUtil;
 
-
-    private final AccountDataValidatorUtil validator;
+    @Autowired
+    @Qualifier("userValidator")
+    private final AccountValidator validator;
 
     private static final Random random = new Random();
 
     private static final ResponseEntity<AuthorizationResponse> UNAUTHORIZED = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 
 
-    @Override
     public Mono<UserDetails> findByUsername(String login) {
         return repository.findByLogin(login);
     }
@@ -57,12 +60,12 @@ public class AccountService implements ReactiveUserDetailsService {
                     if(exists)
                         violations.add("Account with this login/email already exists");
                     else
-                        validator.validate(login, password, email, violations);
+                        validator.validate(new UserData(login, password, email), violations);
 
                     if(!violations.isEmpty())
                         return ResponseEntity.ok().body(new RegistrationResponse(violations));
 
-                    var account = new Account();
+                    var account = new User();
                     account.setLogin(login);
                     account.setPassword(encoder.encode(password));
                     account.setEmail(email);
@@ -101,7 +104,7 @@ public class AccountService implements ReactiveUserDetailsService {
 
         repository.findByCode(code)
                 .filter(Objects::nonNull)
-                .doOnNext(account ->  account.setCode(null))
+                .doOnNext(User::unlock)
                 .log()
                 .subscribe(account -> repository.save(account).subscribe());
 
@@ -116,67 +119,11 @@ public class AccountService implements ReactiveUserDetailsService {
                 .toString();
     }
 
-    private void save(Account account) {
+    private void save(User account) {
         repository.save(account).subscribe();
     }
 
-    public Flux<Account> all() {
+    public Flux<User> all() {
         return repository.findAll();
-    }
-
-    public Mono<ResponseEntity<List<String>>> update(
-            String oldLogin,
-            String newLogin,
-            String oldPassword,
-            String newPassword,
-            String newEmail) {
-
-        return repository
-                .findByLogin(oldLogin).cast(Account.class).defaultIfEmpty(null)
-                .map(account -> {
-
-                    var violations = new ArrayList<String>();
-
-                    if(newLogin == null && newPassword == null && newEmail == null)
-                        violations.add("Nothing to update");
-
-                    if(account == null)
-                        violations.add("Account with this login not exists");
-                    else if(!encoder.matches(oldPassword, account.getPassword()))
-                        violations.add("Wrong password");
-                    else {
-
-                        if(newLogin != null)
-                            validator.validLogin(newLogin, violations);
-                        if(newPassword != null)
-                            validator.validPassword(newPassword, violations);
-                        if(newEmail != null)
-                            validator.validEmail(newEmail, violations);
-                    }
-
-
-                    if(!violations.isEmpty())
-                        return ResponseEntity.badRequest().body(violations);
-
-                    if(newLogin != null)
-                        account.setLogin(newLogin);
-                    if(newPassword != null)
-                        account.setPassword(newPassword);
-                    if(newEmail != null)
-                        account.setEmail(newEmail);
-
-                    account.setCode(randomConfirmationCode());
-                    save(account);
-
-                    try {
-
-                        mailUtil.addToMessageQueue(account);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    return ResponseEntity.ok(violations);
-                });
-
     }
 }

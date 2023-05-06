@@ -1,4 +1,4 @@
-package com.example.Tasksat.data.entities.users;
+package com.example.Tasksat.data.entities.accounts;
 
 import org.springframework.security.core.GrantedAuthority;
 

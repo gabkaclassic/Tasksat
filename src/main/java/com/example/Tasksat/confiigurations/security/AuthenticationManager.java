@@ -1,6 +1,6 @@
 package com.example.Tasksat.confiigurations.security;
 
-import com.example.Tasksat.data.entities.users.AccountService;
+import com.example.Tasksat.data.entities.accounts.users.UserService;
 import com.example.Tasksat.handling.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -8,13 +8,10 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @Component
 @Primary
@@ -23,7 +20,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
 
     private final JWTUtil jwtUtil;
     @Bean
-    protected ReactiveAuthenticationManager reactiveAuthenticationManager(AccountService userDetailsService, PasswordEncoder passwordEncoder) {
+    protected ReactiveAuthenticationManager reactiveAuthenticationManager(UserService userDetailsService, PasswordEncoder passwordEncoder) {
 
         return authentication -> userDetailsService.findByUsername(authentication.getPrincipal().toString())
                 .switchIfEmpty(Mono.error(new UsernameNotFoundException("User not found")))
@@ -50,14 +47,10 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
         if(username == null || jwtUtil.validateToken(authToken))
             return Mono.empty();
 
-        List<String> roles =  jwtUtil.extractRoles(authToken);
-        var authorities = roles.stream().map(SimpleGrantedAuthority::new).toList();
-
-
         var auth = new UsernamePasswordAuthenticationToken(
                 username,
                 authentication.getCredentials(),
-                authorities
+                jwtUtil.extractRoles(authToken)
         );
 
         return Mono.just(auth);

@@ -1,5 +1,6 @@
-package com.example.Tasksat.handling.utils;
+package com.example.Tasksat.handling.utils.validators;
 
+import com.example.Tasksat.handling.utils.validators.data.AccountData;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -7,26 +8,21 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-@Component
-public class AccountDataValidatorUtil {
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("\\w+@\\w+\\.\\w+");
+@Component("accountValidator")
+public abstract class AccountDataValidatorUtil implements AccountValidator {
     private static final Pattern PASSWORD_PATTERN_FIRST = Pattern.compile("\\w+");
     private static final Pattern PASSWORD_PATTERN_SECOND = Pattern.compile("\\d+");
     private static final Pattern PASSWORD_PATTERN_THREE = Pattern.compile("[^0-9a-zA-Z]+");
-
     private static final Pattern LOGIN_PATTERN = Pattern.compile("[a-zA-z]+");
-
     private static final int MIN_LENGTH_LOGIN = 2;
     private static final int MAX_LENGTH_LOGIN = 32;
     private static final int MIN_LENGTH_PASSWORD = 8;
     private static final int MAX_LENGTH_PASSWORD = 128;
 
-    public boolean validate(String login,
-                            String password,
-                            String email,
+    public boolean validate(AccountData data,
                             List<String> remarks) {
 
-        return validLogin(login, remarks) && validPassword(password, remarks) && validEmail(email, remarks);
+        return validLogin(data.getLogin(), remarks) && validPassword(data.getPassword(), remarks);
     }
 
     public boolean validPassword(String password, List<String> remarks) {
@@ -62,17 +58,5 @@ public class AccountDataValidatorUtil {
             remarks.add(String.format("The login can contain %d-%d characters and 1 letter", MIN_LENGTH_LOGIN, MAX_LENGTH_LOGIN));
 
         return isCorrectLogin;
-    }
-
-    public boolean validEmail(String login, List<String> remarks) {
-
-        boolean isCorrectEmailAddress = Objects.nonNull(login)
-                && !login.isEmpty()
-                && EMAIL_PATTERN.matcher(login).find();
-
-        if (!isCorrectEmailAddress)
-            remarks.add("Invalid email address");
-
-        return isCorrectEmailAddress;
     }
 }

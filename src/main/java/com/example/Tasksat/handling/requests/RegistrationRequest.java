@@ -1,4 +1,6 @@
 package com.example.Tasksat.handling.requests;
 
-public record RegistrationRequest(String login, String password, String email) {
+import org.springframework.lang.Nullable;
+
+public record RegistrationRequest(String login, String password, @Nullable String email, String iam) {
 }

@@ -1,14 +1,13 @@
 package com.example.Tasksat.handling.utils;
 
-import com.example.Tasksat.data.entities.users.Account;
+import com.example.Tasksat.data.entities.accounts.Account;
+import com.example.Tasksat.data.entities.accounts.Authority;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class JWTUtil {
 
@@ -55,7 +54,7 @@ public class JWTUtil {
     public String generateToken(Account account) {
 
         var claims = new HashMap<String, Object>();
-        claims.put("role", account.getAuthorities());
+        claims.put("roles", account.getAuthorities());
         claims.put("id", account.getId());
 
 
@@ -75,8 +74,15 @@ public class JWTUtil {
         return getClaimsFromToken(token).get("id").toString();
     }
 
-    public List<String> extractRoles(String authToken) {
-        return getClaimsFromToken(authToken).get("role", List.class);
+    public Set<Authority> extractRoles(String authToken) {
+
+        var roles = new HashSet<Authority>();
+
+        for(var s: getClaimsFromToken(authToken).get("roles", List.class)) {
+            roles.add(Authority.valueOf((String)s));
+        }
+
+        return roles;
     }
 
     public void setKey(byte[] key) {
