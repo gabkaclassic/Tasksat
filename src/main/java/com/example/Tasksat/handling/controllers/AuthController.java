@@ -3,8 +3,8 @@ package com.example.Tasksat.handling.controllers;
 import com.example.Tasksat.data.entities.accounts.AccountService;
 import com.example.Tasksat.handling.requests.AuthorizationRequest;
 import com.example.Tasksat.handling.requests.RegistrationRequest;
-import com.example.Tasksat.handling.responses.AuthorizationResponse;
-import com.example.Tasksat.handling.responses.RegistrationResponse;
+import com.example.Tasksat.handling.responses.account.AuthorizationResponse;
+import com.example.Tasksat.handling.responses.account.RegistrationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -45,10 +45,11 @@ public class AuthController {
             @RequestParam String login,
             @RequestParam String password,
             @RequestParam(required = false) String email,
-            @RequestParam String iam
+            @RequestParam String iam,
+            @RequestHeader(value = "Authorization", required = false) String token
     ) {
 
-        return accountService.registration(new RegistrationRequest(login, password, email, iam));
+        return accountService.registration(new RegistrationRequest(login, password, email, iam), token);
     }
 
     @GetMapping("/confirm/{code}")

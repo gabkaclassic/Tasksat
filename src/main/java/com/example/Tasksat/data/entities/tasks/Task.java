@@ -1,18 +1,15 @@
 package com.example.Tasksat.data.entities.tasks;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
-@Document("tasks")
-public class Task {
-    @Id
-    private String id;
+@NoArgsConstructor
+public abstract class Task {
 
-    private String title;
+    @Field
+    protected String type;
 
-    private String description;
-
-    private TaskType type;
+    protected abstract boolean checkAnswer(String answer);
 }

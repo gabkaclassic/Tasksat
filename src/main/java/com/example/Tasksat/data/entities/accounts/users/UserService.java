@@ -1,8 +1,8 @@
 package com.example.Tasksat.data.entities.accounts.users;
 
 import com.example.Tasksat.data.entities.accounts.Account;
-import com.example.Tasksat.handling.responses.AuthorizationResponse;
-import com.example.Tasksat.handling.responses.RegistrationResponse;
+import com.example.Tasksat.handling.responses.account.AuthorizationResponse;
+import com.example.Tasksat.handling.responses.account.RegistrationResponse;
 import com.example.Tasksat.handling.utils.JWTUtil;
 import com.example.Tasksat.handling.utils.MailUtil;
 import com.example.Tasksat.handling.utils.validators.AccountValidator;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -86,7 +85,7 @@ public class UserService {
     public Mono<ResponseEntity<AuthorizationResponse>> login(String login, String password) {
 
 
-        return findByUsername(login).cast(Account.class)
+        return findByUsername(login).cast(User.class)
                 .map(
                         account -> {
 
@@ -119,11 +118,35 @@ public class UserService {
                 .toString();
     }
 
-    private void save(User account) {
-        repository.save(account).subscribe();
+    public void save(User account) {
+            repository.save(account).subscribe();
     }
 
     public Flux<User> all() {
         return repository.findAll();
+    }
+
+    public Mono<User> findById(String id) {
+        return repository.findById(id);
+    }
+
+    public Mono<Long> countAll() {
+        return repository.count();
+    }
+
+    public Mono<Long> countRecommendationCompletedTask() {
+        return repository.findAll()
+                .map(User::getCompletedQuestionCount)
+                .reduce(Long::sum);
+    }
+    public Mono<Long> countQuestionCompletedTask() {
+        return repository.findAll()
+                .map(User::getCompletedQuestionCount)
+                .reduce(Long::sum);
+    }
+    public Mono<Long> countTestCompletedTask() {
+        return repository.findAll()
+                .map(User::getCompletedTestCount)
+                .reduce(Long::sum);
     }
 }

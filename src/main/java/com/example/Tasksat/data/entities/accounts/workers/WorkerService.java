@@ -1,10 +1,8 @@
 package com.example.Tasksat.data.entities.accounts.workers;
 
 import com.example.Tasksat.data.entities.accounts.Account;
-import com.example.Tasksat.data.entities.accounts.users.User;
-import com.example.Tasksat.handling.responses.AuthorizationResponse;
-import com.example.Tasksat.handling.responses.RegistrationResponse;
-import com.example.Tasksat.handling.utils.validators.AccountDataValidatorUtil;
+import com.example.Tasksat.handling.responses.account.AuthorizationResponse;
+import com.example.Tasksat.handling.responses.account.RegistrationResponse;
 import com.example.Tasksat.handling.utils.JWTUtil;
 import com.example.Tasksat.handling.utils.validators.AccountValidator;
 import com.example.Tasksat.handling.utils.validators.data.AccountData;
@@ -13,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,8 +18,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor

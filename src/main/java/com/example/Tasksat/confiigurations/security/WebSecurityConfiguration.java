@@ -3,6 +3,7 @@ package com.example.Tasksat.confiigurations.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
@@ -34,8 +35,15 @@ public class WebSecurityConfiguration {
                 .authenticationManager(manager)
                 .securityContextRepository(repository)
                 .authorizeExchange()
-                .pathMatchers( "/auth/**", "/auth", "/security/interactionKey")
-                .permitAll().anyExchange().authenticated();
+                .pathMatchers( "/auth/**", "/auth")
+                .permitAll()
+                .pathMatchers(HttpMethod.OPTIONS,
+                        "/check/all/**",
+                        "/check/task/**",
+                        "/statistics/**"
+                )
+                .permitAll()
+                .anyExchange().authenticated();
 
         return security.build();
     }

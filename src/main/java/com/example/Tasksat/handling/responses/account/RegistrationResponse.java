@@ -1,4 +1,4 @@
-package com.example.Tasksat.handling.responses;
+package com.example.Tasksat.handling.responses.account;
 
 import java.util.List;
 

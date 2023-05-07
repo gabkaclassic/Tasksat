@@ -2,12 +2,11 @@ package com.example.Tasksat.data.entities.accounts;
 
 import com.example.Tasksat.data.entities.accounts.admins.AdminService;
 import com.example.Tasksat.data.entities.accounts.users.UserService;
-import com.example.Tasksat.data.entities.accounts.workers.Worker;
 import com.example.Tasksat.data.entities.accounts.workers.WorkerService;
 import com.example.Tasksat.handling.requests.AuthorizationRequest;
 import com.example.Tasksat.handling.requests.RegistrationRequest;
-import com.example.Tasksat.handling.responses.AuthorizationResponse;
-import com.example.Tasksat.handling.responses.RegistrationResponse;
+import com.example.Tasksat.handling.responses.account.AuthorizationResponse;
+import com.example.Tasksat.handling.responses.account.RegistrationResponse;
 import com.example.Tasksat.handling.utils.JWTUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +17,15 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static com.example.Tasksat.data.entities.accounts.Authority.ADMIN;
+import static com.example.Tasksat.data.entities.accounts.Authority.WORKER;
+
 
 @Service
 @RequiredArgsConstructor
 public class AccountService {
+
+    private final JWTUtil jwtUtil;
 
     @Getter
     private final UserService userService;
@@ -44,20 +48,42 @@ public class AccountService {
         };
     }
 
-    public Mono<ResponseEntity<RegistrationResponse>> registration(RegistrationRequest data) {
+    public Mono<ResponseEntity<RegistrationResponse>> registration(RegistrationRequest data, String token) {
+
+        if((data.iam().equals("ADMIN") || data.iam().equals("WORKER")) && token == null)
+            return registrationErrorResponse("Authorization error");
 
         return switch (data.iam()) {
+
             case "USER" -> {
                 if(data.email() == null)
-                    yield Mono.just(ResponseEntity.ok().body(new RegistrationResponse(List.of("Email is required"))));
+                    yield registrationErrorResponse("Email has been required");
 
                 yield userService.registry(data.login(), data.password(), data.email());
             }
-            case "WORKER" -> workerService.registry(data.login(), data.password());
-            case "ADMIN" -> adminService.registry(data.login(), data.password());
-            default -> Mono.just(ResponseEntity.ok().body(new RegistrationResponse(List.of("Account type is not detected"))));
+            case "WORKER" -> {
+
+                var roles = jwtUtil.extractRoles(token);
+
+                if(!roles.contains(ADMIN) && !roles.contains(WORKER))
+                    yield registrationErrorResponse("Permission denied");
+
+                yield workerService.registry(data.login(), data.password());
+            }
+            case "ADMIN" -> {
+
+                var roles = jwtUtil.extractRoles(token);
+
+                if(!roles.contains(ADMIN))
+                    yield registrationErrorResponse("Permission denied");
+
+                yield adminService.registry(data.login(), data.password());
+            }
+            default -> registrationErrorResponse("Account type is not detected");
         };
     }
 
-
+    private static Mono<ResponseEntity<RegistrationResponse>> registrationErrorResponse(String violation) {
+        return Mono.just(ResponseEntity.ok().body(new RegistrationResponse(List.of(violation))));
+    }
 }

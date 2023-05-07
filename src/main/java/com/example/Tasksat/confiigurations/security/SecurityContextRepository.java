@@ -3,6 +3,7 @@ package com.example.Tasksat.confiigurations.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -28,12 +29,10 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
                 .getHeaders()
                 .getFirst(HttpHeaders.AUTHORIZATION);
 
-        if(header == null || !header.startsWith("Bearer "))
+        if(header == null)
             return Mono.empty();
 
-        var auth = header.substring(7);
-
-        var token = new UsernamePasswordAuthenticationToken(auth, auth);
+        var token = new UsernamePasswordAuthenticationToken(header, header);
 
         return manager.authenticate(token).map(SecurityContextImpl::new);
     }

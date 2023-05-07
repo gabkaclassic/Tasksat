@@ -1,8 +1,8 @@
 package com.example.Tasksat.data.entities.accounts.admins;
 
 import com.example.Tasksat.data.entities.accounts.Account;
-import com.example.Tasksat.handling.responses.AuthorizationResponse;
-import com.example.Tasksat.handling.responses.RegistrationResponse;
+import com.example.Tasksat.handling.responses.account.AuthorizationResponse;
+import com.example.Tasksat.handling.responses.account.RegistrationResponse;
 import com.example.Tasksat.handling.utils.JWTUtil;
 import com.example.Tasksat.handling.utils.validators.AccountValidator;
 import com.example.Tasksat.handling.utils.validators.data.AccountData;
