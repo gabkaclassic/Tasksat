@@ -5,11 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Map;
 
-import static com.example.Tasksat.data.entities.tasks.TaskType.RECOMMENDATION;
+import static com.example.Tasksat.data.entities.tasks.TaskType.TEST;
 
 @NoArgsConstructor
 @Document("test_tasks")
@@ -35,7 +34,7 @@ public class TestTask extends Task {
         this.title = title;
         this.rightAnswer = rightAnswer;
         this.variants = variants;
-        type = RECOMMENDATION.name();
+        type = TEST.name();
     }
 
     @Override

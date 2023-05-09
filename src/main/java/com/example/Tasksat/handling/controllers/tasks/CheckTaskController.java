@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin(allowedHeaders = "*", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.POST}, allowCredentials = "true", originPatterns = "*")
 @RequestMapping("/check")
@@ -30,18 +32,18 @@ public class CheckTaskController {
     }
 
     @GetMapping("/all/test")
-    public Flux<TestTaskDTO> allTestTasks(@RequestHeader("Authorization") String token) {
+    public Mono<ResponseEntity<List<TestTaskDTO>>>allTestTasks(@RequestHeader("Authorization") String token) {
 
         return taskService.allTestTask(token);
     }
 
     @GetMapping("/all/question")
-    public Flux<TaskDTO> allQuestionTasks(@RequestHeader("Authorization") String token) {
+    public Mono<ResponseEntity<List<TaskDTO>>> allQuestionTasks(@RequestHeader("Authorization") String token) {
 
         return taskService.allQuestionTask(token);
     }
     @GetMapping("/all/recommendation")
-    public Flux<TaskDTO> allRecommendationTasks(@RequestHeader("Authorization") String token) {
+    public Mono<ResponseEntity<List<TaskDTO>>> allRecommendationTasks(@RequestHeader("Authorization") String token) {
 
         return taskService.allRecommendationTask(token);
     }

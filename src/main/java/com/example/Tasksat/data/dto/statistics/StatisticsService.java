@@ -4,6 +4,7 @@ import com.example.Tasksat.data.entities.accounts.users.UserService;
 import com.example.Tasksat.data.entities.tasks.TaskService;
 import com.example.Tasksat.handling.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -18,6 +19,7 @@ public class StatisticsService {
 
     private final TaskService taskService;
 
+    @Cacheable(value = "statistics", unless = "#result == null")
     public Mono<StatisticsDTO> computeStatistic(String token) {
 
         var statistics = new StatisticsDTO();

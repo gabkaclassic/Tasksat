@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,7 +31,10 @@ public class QuestionTaskService implements TaskChecker {
                     var res = task.checkAnswer(answer);
 
                     if(res) {
-                        userService.findById(userId).subscribe(user -> user.addCompletedTask(task));
+                        userService.findById(userId).doOnNext(user -> {
+                            user.addCompletedTask(task);
+                        }).subscribe(userService::save);
+
                     }
 
                     return res;
@@ -51,12 +55,13 @@ public class QuestionTaskService implements TaskChecker {
         });
     }
 
-    public Flux<TaskDTO> allLikeDTO(Set<QuestionTask> excludes) {
+    public Mono<List<TaskDTO>> allLikeDTO(Set<QuestionTask> excludes) {
 
         return repository.findAll()
                 .filter(task -> !excludes.contains(task))
-                .take(50)
-                .map(task -> new TaskDTO(task.getTitle(), task.getDescription(), task.getId(), task.getType()));
+                .take(50, true)
+                .map(task -> new TaskDTO(task.getTitle(), task.getDescription(), task.getId(), task.getType()))
+                .collectList();
     }
 
     public Mono<Long> countAll() {

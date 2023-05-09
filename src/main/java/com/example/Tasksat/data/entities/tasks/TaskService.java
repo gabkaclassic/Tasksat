@@ -15,10 +15,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -49,27 +49,30 @@ public class TaskService {
         return success.map(res -> ResponseEntity.ok(new CheckTaskResponse(res)));
     }
 
-    public Flux<TestTaskDTO> allTestTask(String token) {
+    public Mono<ResponseEntity<List<TestTaskDTO>>> allTestTask(String token) {
 
         var excludes = new HashSet<TestTask>();
-        return userService.findById(jwtUtil.extractId(token)).doOnNext(user -> {
-            excludes.addAll(user.getCompletedTestTasks());
-        }).thenMany(s -> testTaskService.allLikeDTO(excludes));
+        return userService.findById(jwtUtil.extractId(token))
+                .doOnNext(user -> excludes.addAll(user.getCompletedTestTasks()))
+                .then(testTaskService.allLikeDTO(excludes))
+                .map(ResponseEntity::ok);
     }
 
-    public Flux<TaskDTO> allRecommendationTask(String token) {
+    public Mono<ResponseEntity<List<TaskDTO>>> allRecommendationTask(String token) {
 
         var excludes = new HashSet<RecommendationTask>();
-        return userService.findById(jwtUtil.extractId(token)).doOnNext(user -> {
-            excludes.addAll(user.getCompletedRecommendationTasks());
-        }).thenMany(s -> recommendationTaskService.allLikeDTO(excludes));
+        return userService.findById(jwtUtil.extractId(token))
+                .doOnNext(user -> excludes.addAll(user.getCompletedRecommendationTasks()))
+                .then(recommendationTaskService.allLikeDTO(excludes))
+                .map(ResponseEntity::ok);
     }
 
-    public Flux<TaskDTO> allQuestionTask(String token) {
+    public Mono<ResponseEntity<List<TaskDTO>>> allQuestionTask(String token) {
 
         var excludes = new HashSet<QuestionTask>();
-        return userService.findById(jwtUtil.extractId(token)).doOnNext(user -> {
-            excludes.addAll(user.getCompletedQuestionTasks());
-        }).thenMany(s -> questionTaskService.allLikeDTO(excludes));
+        return userService.findById(jwtUtil.extractId(token))
+                .doOnNext(user -> excludes.addAll(user.getCompletedQuestionTasks()))
+                .then(questionTaskService.allLikeDTO(excludes))
+                .map(ResponseEntity::ok);
     }
 }

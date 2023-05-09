@@ -39,6 +39,7 @@ public class WebSecurityConfiguration {
                 .permitAll()
                 .pathMatchers(HttpMethod.OPTIONS,
                         "/check/all/**",
+                        "/create/**",
                         "/check/task/**",
                         "/statistics/**"
                 )

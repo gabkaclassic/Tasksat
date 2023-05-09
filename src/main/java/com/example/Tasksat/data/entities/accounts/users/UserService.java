@@ -136,7 +136,7 @@ public class UserService {
 
     public Mono<Long> countRecommendationCompletedTask() {
         return repository.findAll()
-                .map(User::getCompletedQuestionCount)
+                .map(User::getCompletedRecommendationCount)
                 .reduce(Long::sum);
     }
     public Mono<Long> countQuestionCompletedTask() {
