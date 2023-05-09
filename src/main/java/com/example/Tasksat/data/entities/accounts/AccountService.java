@@ -1,10 +1,12 @@
 package com.example.Tasksat.data.entities.accounts;
 
+import com.example.Tasksat.data.dto.accounts.AccountDTO;
 import com.example.Tasksat.data.entities.accounts.admins.AdminService;
 import com.example.Tasksat.data.entities.accounts.users.UserService;
 import com.example.Tasksat.data.entities.accounts.workers.WorkerService;
 import com.example.Tasksat.handling.requests.AuthorizationRequest;
 import com.example.Tasksat.handling.requests.RegistrationRequest;
+import com.example.Tasksat.handling.responses.SuccessOperationResponse;
 import com.example.Tasksat.handling.responses.account.AuthorizationResponse;
 import com.example.Tasksat.handling.responses.account.RegistrationResponse;
 import com.example.Tasksat.handling.utils.JWTUtil;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -85,5 +88,24 @@ public class AccountService {
 
     private static Mono<ResponseEntity<RegistrationResponse>> registrationErrorResponse(String violation) {
         return Mono.just(ResponseEntity.ok().body(new RegistrationResponse(List.of(violation))));
+    }
+
+    public Mono<ResponseEntity<List<AccountDTO>>> all() {
+        return Flux.merge(
+                    userService.allLikeAccountDTO(),
+                    workerService.allLikeAccountDTO(),
+                    adminService.allLikeAccountDTO()
+                )
+                .collectList()
+                .map(ResponseEntity::ok);
+    }
+    public Mono<ResponseEntity<SuccessOperationResponse>> deleteAccount(String id, String type) {
+
+        return switch (Authority.valueOf(type.toUpperCase())) {
+            case USER -> userService.deleteById(id);
+            case ADMIN -> adminService.deleteById(id);
+            case WORKER -> workerService.deleteById(id);
+            default -> Mono.just(ResponseEntity.ok(new SuccessOperationResponse(false)));
+        };
     }
 }

@@ -1,16 +1,13 @@
 package com.example.Tasksat.data.entities.tasks.test;
 
 
-import com.example.Tasksat.data.dto.tasks.TaskDTO;
 import com.example.Tasksat.data.dto.tasks.TestTaskDTO;
 import com.example.Tasksat.data.entities.accounts.users.UserService;
 import com.example.Tasksat.data.entities.tasks.TaskChecker;
-import com.example.Tasksat.data.entities.tasks.recommendation.RecommendationTask;
-import com.example.Tasksat.handling.responses.tasks.CreateTaskResponse;
+import com.example.Tasksat.handling.responses.SuccessOperationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -41,18 +38,18 @@ public class TestTaskService implements TaskChecker {
                 });
     }
 
-    public Mono<ResponseEntity<CreateTaskResponse>> create(String title, String variant1, String variant2, String variant3, String rightAnswer, String description) {
+    public Mono<ResponseEntity<SuccessOperationResponse>> create(String title, String variant1, String variant2, String variant3, String rightAnswer, String description) {
 
         return repository.existsByTitle(title).map(res -> {
 
             if(res)
-                return ResponseEntity.ok(new CreateTaskResponse(false));
+                return ResponseEntity.ok(new SuccessOperationResponse(false));
 
             var variants = Map.of("1", variant1, "2", variant2, "3", variant3);
             var task = new TestTask(description, title, rightAnswer, variants);
             repository.save(task).subscribe();
 
-            return ResponseEntity.ok(new CreateTaskResponse(true));
+            return ResponseEntity.ok(new SuccessOperationResponse(true));
         });
     }
 

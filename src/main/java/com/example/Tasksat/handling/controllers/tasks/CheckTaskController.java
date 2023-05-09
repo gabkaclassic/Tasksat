@@ -3,12 +3,11 @@ package com.example.Tasksat.handling.controllers.tasks;
 import com.example.Tasksat.data.dto.tasks.TaskDTO;
 import com.example.Tasksat.data.dto.tasks.TestTaskDTO;
 import com.example.Tasksat.data.entities.tasks.TaskService;
-import com.example.Tasksat.handling.responses.tasks.CheckTaskResponse;
+import com.example.Tasksat.handling.responses.SuccessOperationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -22,7 +21,7 @@ public class CheckTaskController {
 
     private final TaskService taskService;
     @GetMapping("/task")
-    public Mono<ResponseEntity<CheckTaskResponse>> checkTask(
+    public Mono<ResponseEntity<SuccessOperationResponse>> checkTask(
             @RequestParam String taskId,
             @RequestParam String taskType,
             @RequestParam String answer,

@@ -9,7 +9,7 @@ import com.example.Tasksat.data.entities.tasks.recommendation.RecommendationTask
 import com.example.Tasksat.data.entities.tasks.recommendation.RecommendationTaskService;
 import com.example.Tasksat.data.entities.tasks.test.TestTask;
 import com.example.Tasksat.data.entities.tasks.test.TestTaskService;
-import com.example.Tasksat.handling.responses.tasks.CheckTaskResponse;
+import com.example.Tasksat.handling.responses.SuccessOperationResponse;
 import com.example.Tasksat.handling.utils.JWTUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class TaskService {
     private final JWTUtil jwtUtil;
 
     private final UserService userService;
-    public Mono<ResponseEntity<CheckTaskResponse>> check(String taskId, String taskType, String answer, String token) {
+    public Mono<ResponseEntity<SuccessOperationResponse>> check(String taskId, String taskType, String answer, String token) {
 
         var userId = jwtUtil.extractId(token);
 
@@ -46,7 +46,7 @@ public class TaskService {
             case QUESTION -> questionTaskService.checkAnswer(taskId, answer, userId);
         };
 
-        return success.map(res -> ResponseEntity.ok(new CheckTaskResponse(res)));
+        return success.map(res -> ResponseEntity.ok(new SuccessOperationResponse(res)));
     }
 
     public Mono<ResponseEntity<List<TestTaskDTO>>> allTestTask(String token) {

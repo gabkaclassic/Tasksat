@@ -1,6 +1,8 @@
 package com.example.Tasksat.data.entities.accounts.workers;
 
+import com.example.Tasksat.data.dto.accounts.AccountDTO;
 import com.example.Tasksat.data.entities.accounts.Account;
+import com.example.Tasksat.handling.responses.SuccessOperationResponse;
 import com.example.Tasksat.handling.responses.account.AuthorizationResponse;
 import com.example.Tasksat.handling.responses.account.RegistrationResponse;
 import com.example.Tasksat.handling.utils.JWTUtil;
@@ -84,8 +86,12 @@ public class WorkerService {
         repository.save(account).subscribe();
     }
 
-    public Flux<Worker> all() {
-        return repository.findAll();
+    public Flux<AccountDTO> allLikeAccountDTO() {
+        return repository.findAll()
+                .map(AccountDTO::new);
     }
 
+    public Mono<ResponseEntity<SuccessOperationResponse>> deleteById(String id) {
+        return repository.deleteById(id).then(Mono.just(ResponseEntity.ok(new SuccessOperationResponse(true))));
+    }
 }

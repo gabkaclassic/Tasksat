@@ -1,7 +1,7 @@
 package com.example.Tasksat.handling.controllers.tasks;
 
 import com.example.Tasksat.data.entities.tasks.TaskService;
-import com.example.Tasksat.handling.responses.tasks.CreateTaskResponse;
+import com.example.Tasksat.handling.responses.SuccessOperationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,7 +17,7 @@ public class CreateTaskController {
     
     private final TaskService taskService;
     @PostMapping("/test")
-    public Mono<ResponseEntity<CreateTaskResponse>> createTestTask(
+    public Mono<ResponseEntity<SuccessOperationResponse>> createTestTask(
             @RequestParam String title,
             @RequestParam String variant1,
             @RequestParam String variant2,
@@ -30,7 +30,7 @@ public class CreateTaskController {
     }
 
     @PostMapping("/question")
-    public Mono<ResponseEntity<CreateTaskResponse>> createTestTask(
+    public Mono<ResponseEntity<SuccessOperationResponse>> createTestTask(
             @RequestParam String title,
             @RequestParam String rightAnswer,
             @RequestParam String description
@@ -40,7 +40,7 @@ public class CreateTaskController {
     }
 
     @PostMapping("/recommendation")
-    public Mono<ResponseEntity<CreateTaskResponse>> createRecommendationTask(
+    public Mono<ResponseEntity<SuccessOperationResponse>> createRecommendationTask(
             @RequestParam String title,
             @RequestParam String description
     ) {

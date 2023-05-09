@@ -32,8 +32,8 @@ public class CacheConfiguration {
                         name,
                         CacheBuilder.newBuilder()
                                 .maximumSize(CACHE_MAXIMUM_SIZE)
-                                .refreshAfterWrite(1, TimeUnit.HOURS)
-                                .expireAfterWrite(12, TimeUnit.HOURS)
+                                .refreshAfterWrite(5, TimeUnit.MINUTES)
+                                .expireAfterWrite(5, TimeUnit.MINUTES)
                                 .build(new CacheLoader() {
                                     @Override
                                     public Object load(Object key) {

@@ -41,7 +41,8 @@ public class WebSecurityConfiguration {
                         "/check/all/**",
                         "/create/**",
                         "/check/task/**",
-                        "/statistics/**"
+                        "/statistics/**",
+                        "/admin/**"
                 )
                 .permitAll()
                 .anyExchange().authenticated();
