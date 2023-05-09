@@ -62,4 +62,8 @@ public class User extends Account {
     public long getCompletedTestCount() {
         return completedTestTasks.size();
     }
+    @Override
+    public boolean isAccountNonLocked() {
+        return !authorities.contains(LOCKED) && code == null;
+    }
 }
